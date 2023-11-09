@@ -6,7 +6,7 @@
 <div class="container">
   <h1>Lista delle pizze</h1>
   <hr>
-  <table class="table table-striped">
+  <table class="table table-hover align-middle">
     <thead>
     <tr>
       <th>Nome</th>
@@ -19,7 +19,7 @@
     <tr th:each="pizza : ${pizzaList}" th:object="${pizza}">
       <td th:text="*{name}"></td>
       <td th:text="*{description}"></td>
-      <td th:text="*{price}"></td>
+      <td th:text="*{price}  + ' €'"></td>
       <td th:text="*{urlImg}"></td>
     </tr>
     </tbody>
