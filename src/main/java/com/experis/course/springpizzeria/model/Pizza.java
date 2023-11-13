@@ -1,6 +1,10 @@
 package com.experis.course.springpizzeria.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -11,11 +15,16 @@ public class Pizza {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @NotBlank(message = "Il nome non può essere vuoto")
+    @Size(max = 255)
     private String name;
     @Lob
     private String description;
+    @NotBlank(message = "L url della img non può essere vuoto")
     @Lob
     private String urlImg;
+    @DecimalMin(value = "0.01", message = "Il prezzo deve essere maggiore di zero")
+    @NotNull
     private BigDecimal price;
     private LocalDateTime createdAt;
 
