@@ -46,15 +46,48 @@ public class PizzaController {
     @GetMapping("/create")
     public String create(Model model) {
         model.addAttribute("pizza", new Pizza());
-        return "pizze/create";
+        return "pizze/form";
     }
 
     @PostMapping("/create")
     public String doCreate(@Valid @ModelAttribute("pizza") Pizza formPizza, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "pizze/create";
+            return "pizze/form";
         }
         Pizza savedPizza = pizzaRepository.save(formPizza);
         return "redirect:/pizze/show/" + savedPizza.getId();
+    }
+
+    @GetMapping("/edit/{id}")
+    public String edit(@PathVariable Integer id, Model model) {
+        Optional<Pizza> result = pizzaRepository.findById(id);
+        if (result.isPresent()) {
+            model.addAttribute("pizza", result.get());
+            return "/pizze/form";
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La pizza con " + id + "non è stat trovata");
+        }
+    }
+
+    @PostMapping("/edit/{id}")
+    public String doEdit(@PathVariable Integer id, @Valid @ModelAttribute("pizza") Pizza formPizza, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "/pizze/form";
+        }
+        Pizza pizzaToEdit = pizzaRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        pizzaToEdit.setName(formPizza.getName());
+        pizzaToEdit.setPrice(formPizza.getPrice());
+        pizzaToEdit.setUrlImg(formPizza.getUrlImg());
+        pizzaToEdit.setDescription(formPizza.getDescription());
+
+        Pizza savedPizza = pizzaRepository.save(pizzaToEdit);
+        return "redirect:/pizze/show/" + savedPizza.getId();
+    }
+
+    @PostMapping("/delete/{id}")
+    public String delete(@PathVariable Integer id) {
+        Pizza pizzaToDelete = pizzaRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        pizzaRepository.deleteById(id);
+        return "redirect:/pizze";
     }
 }
